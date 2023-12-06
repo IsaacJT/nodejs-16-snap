@@ -8,6 +8,11 @@ description: |
   the usespace components included are not tested outside of this use-case.
 confinement: strict
 adopt-info: nodejs
+license: MIT AND BSD-2-Clause AND ISC
+issues: https://github.com/IsaacJT/nodejs-16-snap/issues
+website: https://github.com/IsaacJT/nodejs-16-snap
+source-code: https://github.com/IsaacJT/nodejs-16-snap
+contact: isaac.true@canonical.com
 
 parts:
   nodejs:
