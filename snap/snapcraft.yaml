@@ -37,8 +37,6 @@ parts:
       - CXX: "g++-10"
     autotools-configure-parameters:
       - "--shared-openssl"
-    prime:
-      - "usr"
 
   npmrc:
     plugin: "nil"
@@ -48,22 +46,22 @@ parts:
 
 apps:
   npm:
-    command: "usr/bin/npm"
+    command: "usr/local/bin/npm"
     plugs:
       - "home"
       - "network"
   corepack:
-    command: "usr/bin/corepack"
+    command: "usr/local/bin/corepack"
     plugs:
       - "home"
       - "network"
   npx:
-    command: "usr/bin/npx"
+    command: "usr/local/bin/npx"
     plugs:
       - "home"
       - "network"
   node:
-    command: "usr/bin/node"
+    command: "usr/local/bin/node"
     plugs:
       - "home"
       - "network"
@@ -71,4 +69,4 @@ apps:
 
 layout:
   /usr/local:
-    bind: "$SNAP/usr"
+    bind: "$SNAP/usr/local"
