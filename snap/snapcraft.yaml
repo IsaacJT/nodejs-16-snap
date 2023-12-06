@@ -1,87 +1,74 @@
-name: nodejs-16
-base: core22
-summary: Node.js 16 binaries
+name: "nodejs-binaries"
+base: "core22"
+summary: "Node.js binaries"
 description: |
-  This snap provides the Node.js binaries. This is mostly intended to be
+  This snap provides prebuilt Node.js binaries. This is mostly intended to be
   included as a build dependency in other snaps to save compile time on
   platforms that do not have pre-built Node.js packages available. As such,
   the usespace components included are not tested outside of this use-case.
-confinement: strict
-adopt-info: nodejs
-license: MIT AND BSD-2-Clause AND ISC
-issues: https://github.com/IsaacJT/nodejs-16-snap/issues
-website: https://github.com/IsaacJT/nodejs-16-snap
-source-code: https://github.com/IsaacJT/nodejs-16-snap
-contact: isaac.true@canonical.com
+confinement: "strict"
+license: "MIT AND BSD-2-Clause AND ISC"
+issues: "https://github.com/IsaacJT/nodejs-binaries-snap/issues"
+website: "https://github.com/IsaacJT/nodejs-binaries-snap"
+source-code: "https://github.com/IsaacJT/nodejs-binaries-snap"
+contact: "isaac.true@canonical.com"
+version: "v16.20.2"
 
 parts:
   nodejs:
-    plugin: nil
-    source: https://github.com/nodejs/node.git
-    source-tag: v16.20.2
-    source-type: git
+    plugin: "autotools"
+    source: "https://github.com/nodejs/node.git"
+    source-tag: "v16.20.2"
+    source-type: "git"
     source-depth: 1
     build-packages:
-      - python3
-      - python3-pip
-      - make
-      - ccache
-      - libatomic1
-      - libssl-dev
-      - gcc-10
-      - g++-10
+      - "python3"
+      - "python3-pip"
+      - "make"
+      - "libatomic1"
+      - "libssl-dev"
+      - "gcc-10"
+      - "g++-10"
     stage-packages:
-      - libstdc++6
-      - libssl3
+      - "libstdc++6"
+      - "libssl3"
     build-environment:
-      - PATH: "/usr/lib/ccache/:${PATH}"
       - CC: "gcc-10"
       - CXX: "g++-10"
-    override-build: |
-      ./configure \
-        --shared-openssl \
-        --prefix "${CRAFT_PART_INSTALL}/usr"
-      make -j$(nproc)
-      make install
-
-      VER_MAJOR="$(grep '#define NODE_MAJOR_VERSION' "${CRAFT_PART_BUILD}/src/node_version.h" | cut -f 3 -d\ )"
-      VER_MINOR="$(grep '#define NODE_MINOR_VERSION' "${CRAFT_PART_BUILD}/src/node_version.h" | cut -f 3 -d\ )"
-      VER_PATCH="$(grep '#define NODE_PATCH_VERSION' "${CRAFT_PART_BUILD}/src/node_version.h" | cut -f 3 -d\ )"
-
-      craftctl set version="v${VER_MAJOR}.${VER_MINOR}.${VER_PATCH}"
-      craftctl set grade="stable"
+    autotools-configure-parameters:
+      - "--shared-openssl"
     prime:
-      - usr
+      - "usr"
 
   npmrc:
-    plugin: nil
+    plugin: "nil"
     override-build: |
       mkdir -p "${CRAFT_PART_INSTALL}/etc"
       echo "prefix = /usr/local" >> "${CRAFT_PART_INSTALL}/etc/npmrc"
 
 apps:
   npm:
-    command: usr/bin/npm
+    command: "usr/bin/npm"
     plugs:
-      - home
-      - network
+      - "home"
+      - "network"
   corepack:
-    command: usr/bin/corepack
+    command: "usr/bin/corepack"
     plugs:
-      - home
-      - network
+      - "home"
+      - "network"
   npx:
-    command: usr/bin/npx
+    command: "usr/bin/npx"
     plugs:
-      - home
-      - network
+      - "home"
+      - "network"
   node:
-    command: usr/bin/node
+    command: "usr/bin/node"
     plugs:
-      - home
-      - network
-      - network-bind
+      - "home"
+      - "network"
+      - "network-bind"
 
 layout:
   /usr/local:
-    bind: $SNAP/usr
+    bind: "$SNAP/usr"
