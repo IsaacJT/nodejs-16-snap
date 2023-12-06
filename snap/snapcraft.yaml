@@ -1,10 +1,10 @@
 name: nodejs-16
 base: core22
-summary: NodeJS 16 binaries
+summary: Node.js 16 binaries
 description: |
-  This snap provides the NodeJS binaries. This is mostly intended to be
+  This snap provides the Node.js binaries. This is mostly intended to be
   included as a build dependency in other snaps to save compile time on
-  platforms that do not have pre-built NodeJS packages available. As such,
+  platforms that do not have pre-built Node.js packages available. As such,
   the usespace components included are not tested outside of this use-case.
 confinement: strict
 adopt-info: nodejs
@@ -18,7 +18,7 @@ parts:
   nodejs:
     plugin: nil
     source: https://github.com/nodejs/node.git
-    source-branch: v16.x
+    source-tag: v16.20.2
     source-type: git
     source-depth: 1
     build-packages:
