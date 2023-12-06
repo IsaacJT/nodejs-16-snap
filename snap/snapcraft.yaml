@@ -1,0 +1,82 @@
+name: nodejs-16
+base: core22
+summary: NodeJS 16 binaries
+description: |
+  This snap provides the NodeJS binaries. This is mostly intended to be
+  included as a build dependency in other snaps to save compile time on
+  platforms that do not have pre-built NodeJS packages available. As such,
+  the usespace components included are not tested outside of this use-case.
+confinement: strict
+adopt-info: nodejs
+
+parts:
+  nodejs:
+    plugin: nil
+    source: https://github.com/nodejs/node.git
+    source-branch: v16.x
+    source-type: git
+    source-depth: 1
+    build-packages:
+      - python3
+      - python3-pip
+      - make
+      - ccache
+      - libatomic1
+      - libssl-dev
+      - gcc-10
+      - g++-10
+    stage-packages:
+      - libstdc++6
+      - libssl3
+    build-environment:
+      - PATH: "/usr/lib/ccache/:${PATH}"
+      - CC: "gcc-10"
+      - CXX: "g++-10"
+    override-build: |
+      ./configure \
+        --shared-openssl \
+        --prefix "${CRAFT_PART_INSTALL}/usr"
+      make -j$(nproc)
+      make install
+
+      VER_MAJOR="$(grep '#define NODE_MAJOR_VERSION' "${CRAFT_PART_BUILD}/src/node_version.h" | cut -f 3 -d\ )"
+      VER_MINOR="$(grep '#define NODE_MINOR_VERSION' "${CRAFT_PART_BUILD}/src/node_version.h" | cut -f 3 -d\ )"
+      VER_PATCH="$(grep '#define NODE_PATCH_VERSION' "${CRAFT_PART_BUILD}/src/node_version.h" | cut -f 3 -d\ )"
+
+      craftctl set version="v${VER_MAJOR}.${VER_MINOR}.${VER_PATCH}"
+      craftctl set grade="stable"
+    prime:
+      - usr
+
+  npmrc:
+    plugin: nil
+    override-build: |
+      mkdir -p "${CRAFT_PART_INSTALL}/etc"
+      echo "prefix = /usr/local" >> "${CRAFT_PART_INSTALL}/etc/npmrc"
+
+apps:
+  npm:
+    command: usr/bin/npm
+    plugs:
+      - home
+      - network
+  corepack:
+    command: usr/bin/corepack
+    plugs:
+      - home
+      - network
+  npx:
+    command: usr/bin/npx
+    plugs:
+      - home
+      - network
+  node:
+    command: usr/bin/node
+    plugs:
+      - home
+      - network
+      - network-bind
+
+layout:
+  /usr/local:
+    bind: $SNAP/usr
